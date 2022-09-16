@@ -25,19 +25,20 @@ class PaymentsWorker {
     }
   }
 
-  async processMessages(message: Message | null, channel: Channel | null) {
+  async processMessages(message: Message, channel: Channel) {
     try {
-      this.logger.log(` [x] ${message?.fields.routingKey}: message received: '${message?.content.toString('utf8')}'`);
-      const messageObject = JSON.parse(message?.content?.toString('utf8') ?? '{}');
-      if (messageObject.method === 'cancelPayment') {
-        const models = await this.getModel(messageObject?.object);
+      this.logger.log(` [x] ${message.fields.routingKey}: message received: '${message.content.toString('utf8')}'`);
+      const payload = JSON.parse(message.content?.toString('utf8') ?? '{}') as Types.Interfaces.IAMQPPayload<string>;
+      if (payload.method === 'cancelPayment') {
+        const payloadObject = payload?.object as string;
+        const models = await this.getModel(payloadObject);
         if (!models) {
           this.logger.error('Nao foi possivel obter gateway - 2');
           return false;
         }
         const { paymentGateway, userPaymentModel } = models;
         let n = 0;
-        let total = 0;
+        const startTime = new Date().getTime();
         let i = 0;
         for (i = 1; i <= 5; i++) {
           const chargeObject = new Types.Interfaces.Pagseguro.IPagSeguroCreateCharge({
@@ -50,16 +51,13 @@ class PaymentsWorker {
               Types.Types.Pagseguro.TPagSeguroPaymentMethod.valueOf(chargeResult?.status) ?? undefined;
             await userPaymentModel.save();
             this.logger.log('Cobranca foi cancelada com sucesso');
-            if (message) {
-              channel?.ack(message);
-            }
+            channel.ack(message);
             return true;
           }
           n += i;
-          total += n * 4;
           await Utils.System.sleep(n * 4000);
         }
-        this.logger.error(`nao foi possivel cancelar cobranca após ${i} tentativas em ${total}s.`);
+        this.logger.error(`nao foi possivel cancelar cobranca após ${i} tentativas em ${(startTime - new Date().getTime()) / 1000}s.`);
       }
     } catch (error: any) {
       this.logger.error(`nao foi possivel cancelar cobranca, erro inesperado:`);

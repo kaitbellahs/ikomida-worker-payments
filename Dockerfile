@@ -11,7 +11,7 @@ RUN apk update && apk --no-cache -U upgrade && apk add --no-cache yarn npm && ec
 COPY .npmrc package.json .npmrc .eslintignore .prettierrc api-extractor.json rollup.config.ts tsconfig.json /service/
 COPY ./src /service/src
 
-RUN yarn glogin && yarn install && yarn build && rm -rf node_modules && yarn install --production
+RUN yarn glogin && yarn install && rm -rf node_modules && yarn install --production
 
 FROM node:16-alpine AS final
 

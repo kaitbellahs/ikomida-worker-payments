@@ -22,7 +22,7 @@
     "format": "prettier --write \"src/**/*.ts\"",
     "lint": "eslint . --ext .ts --quiet --fix",
     "clean": "rimraf ./build ./dist ./docs",
-    "glogin": "npx google-artifactregistry-auth",
+    "glogin": "artifactregistry-auth",
     "prepare": "yarn build",
     "prepublishOnly": "yarn lint",
     "preversion": "yarn lint",
@@ -32,7 +32,7 @@
   "author": "Khalid Ait Bellahs",
   "license": "UNLICENSED",
   "dependencies": {
-    "@ikomida/shared-backend": "^0.0.103",
+    "@ikomida/shared-backend": "^0.0.107",
     "axios": "^0.27.2"
   },
   "devDependencies": {
@@ -60,6 +60,7 @@
     "chai": "^4.3.6",
     "eslint": "^8.9.0",
     "eslint-config-prettier": "^8.5.0",
+    "google-artifactregistry-auth": "^3.0.2",
     "jsdoc": "^3.6.10",
     "linkify-it": "^4.0.1",
     "mocha": "^9.2.1",
