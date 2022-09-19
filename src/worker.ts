@@ -28,12 +28,12 @@ class PaymentsWorker {
   async processMessages(message: Message, channel: Channel) {
     try {
       this.logger.log(` [x] ${message.fields.routingKey}: message received: '${message.content.toString('utf8')}'`);
-      const payload = JSON.parse(message.content?.toString('utf8') ?? '{}') as Types.Interfaces.IAMQPPayload<string>;
+      const payload: Types.Classes.CAMQPPayload<string> = Types.Classes.CAMQPPayload.fromObject(JSON.parse(message.content?.toString('utf8') ?? '{}'));
       if (payload.method === 'cancelPayment') {
-        const payloadObject = payload?.object as string;
-        const models = await this.getModel(payloadObject);
+        const paymentID = String(payload?.object);
+        const models = await this.getModel(paymentID);
         if (!models) {
-          this.logger.error('Nao foi possivel obter gateway - 2');
+          this.logger.error('Nao foi possivel obter o pagamento do banco de dados');
           return false;
         }
         const { paymentGateway, userPaymentModel } = models;
@@ -41,14 +41,10 @@ class PaymentsWorker {
         const startTime = new Date().getTime();
         let i = 0;
         for (i = 1; i <= 5; i++) {
-          const chargeObject = new Types.Interfaces.Pagseguro.IPagSeguroCreateCharge({
-            id: userPaymentModel?.gatewayPaymentID,
-            amount: userPaymentModel?.amount,
-          });
-          const chargeResult = await paymentGateway?.cancelCharge(chargeObject);
+          const cancelChargeObject = Types.Classes.Pagseguro.CPagSeguroCreateCharge.init('', userPaymentModel?.amount ?? 0, Types.Types.Pagseguro.TPagSeguroPaymentMethod.CREDIT_CARD, '', undefined, undefined, undefined, undefined, undefined, undefined, userPaymentModel?.gatewayPaymentID);
+          const chargeResult = await paymentGateway?.cancelCharge(cancelChargeObject);
           if (chargeResult) {
-            userPaymentModel.status =
-              Types.Types.Pagseguro.TPagSeguroPaymentMethod.valueOf(chargeResult?.status) ?? undefined;
+            userPaymentModel.status = chargeResult?.status;
             await userPaymentModel.save();
             this.logger.log('Cobranca foi cancelada com sucesso');
             channel.ack(message);
