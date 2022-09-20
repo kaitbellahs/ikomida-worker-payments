@@ -19,8 +19,8 @@ spec:
         - image: hub.docker.internal:5000/ikomida/payments-worker-image:latest
           name: payments-worker
           env:
-            - name: ENV
-              value: "DEV"
+            - name: NODE_ENV
+              value: "development"
             - name: GOOGLEADMIN
               valueFrom:
                 secretKeyRef:
