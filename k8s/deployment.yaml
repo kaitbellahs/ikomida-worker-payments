@@ -6,7 +6,7 @@ metadata:
   name: payments-worker
   namespace: ikomida-worker
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: payments
@@ -30,6 +30,11 @@ spec:
                 - all
             privileged: false
             readOnlyRootFilesystem: true
+          resources:
+            requests:
+              cpu: "20m"
+            limits:
+              cpu: "40m"
           env:
             - name: NODE_ENV
               value: "production"
@@ -96,3 +101,15 @@ spec:
                 secretKeyRef:
                   name: environment
                   key: PROJID
+            - name: PAGSEGURO_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: environment
+                  key: PAGSEGURO_EMAIL
+                  optional: false
+            - name: PAGSEGURO_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: environment
+                  key: PAGSEGURO_TOKEN
+                  optional: false
