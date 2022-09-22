@@ -34,6 +34,7 @@ class PaymentsWorker {
         const models = await this.getModel(paymentID);
         if (!models) {
           this.logger.error('Nao foi possivel obter o pagamento do banco de dados');
+          channel.ack(message);
           return false;
         }
         const { paymentGateway, userPaymentModel } = models;
