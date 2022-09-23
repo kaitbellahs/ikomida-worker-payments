@@ -28,7 +28,7 @@ steps:
         "image",
         "deployment",
         "payments-worker",
-        "payments-worker=us-central1-docker.pkg.dev/ikomida-prod/docker/payments-worker-image:$TAG_NAME",
+        "payments-worker=us-central1-docker.pkg.dev/ikomida-dev/docker/payments-worker-image:$TAG_NAME",
       ]
     env:
       - "CLOUDSDK_COMPUTE_ZONE=us-central1-b"
