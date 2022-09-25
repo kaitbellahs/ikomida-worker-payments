@@ -58,7 +58,7 @@ class PaymentsWorker {
       }
     } catch (error: any) {
       this.logger.error(`nao foi possivel cancelar cobranca, erro inesperado:`);
-      console.error(error);
+      this.logger.error(error);
     }
   }
 
@@ -99,7 +99,7 @@ class PaymentsWorker {
       }
       return { paymentGateway, userPaymentModel };
     } catch (exception) {
-      console.error(exception);
+      this.logger.error(exception);
       return false;
     }
   }
