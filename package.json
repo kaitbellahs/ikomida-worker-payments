@@ -31,7 +31,7 @@
   "author": "Khalid Ait Bellahs",
   "license": "UNLICENSED",
   "dependencies": {
-    "@ikomida/shared-backend": "^0.0.228",
+    "@ikomida/shared-backend": "^0.0.232",
     "axios": "^0.27.2"
   },
   "devDependencies": {
@@ -45,7 +45,7 @@
     "@types/linkify-it": "^3.0.2",
     "@types/luxon": "^3.0.1",
     "@types/morgan": "^1.9.3",
-    "@types/node": "^18.7.20",
+    "@types/node": "^18.7.21",
     "@types/node-mailjet": "^3.3.9",
     "@types/sequelize": "^4.28.14",
     "@types/sharp": "^0.31.0",
