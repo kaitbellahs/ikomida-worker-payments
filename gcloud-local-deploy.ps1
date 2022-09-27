@@ -24,7 +24,7 @@ docker build -t us-central1-docker.pkg.dev/$projectid/docker/payments-worker-ima
 ThrowOnNativeFailure
 docker push us-central1-docker.pkg.dev/$projectid/docker/payments-worker-image:latest
 ThrowOnNativeFailure
-kubectl -n ikomida-worker delete deploy payments-worker
+kubectl -n ikomida-worker delete ReplicaSet payments-worker
 
 Get-ChildItem ".\k8s\" -Filter *.yaml | 
 Foreach-Object {
