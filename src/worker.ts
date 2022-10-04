@@ -41,6 +41,7 @@ class PaymentsWorker {
         let n = 0;
         const startTime = new Date().getTime();
         let i = 0;
+        const waitTime = new Date().getTime() - 5 * 60 * 1000 < userPaymentModel.createdAt.getTime() ? 30 * 1000 : 5 * 1000
         for (i = 1; i <= 5; i++) {
           const cancelChargeObject = Types.Classes.Pagseguro.CPagSeguroCreateCharge.init('', userPaymentModel?.amount ?? 0, Types.Types.Pagseguro.TPagSeguroPaymentMethod.CREDIT_CARD, '', undefined, undefined, undefined, undefined, undefined, undefined, userPaymentModel?.gatewayPaymentID);
           const chargeResult = await paymentGateway?.cancelCharge(cancelChargeObject);
@@ -52,7 +53,7 @@ class PaymentsWorker {
             return true;
           }
           n += i;
-          await Utils.System.sleep(n * 4000);
+          await Utils.System.sleep(n * waitTime);
         }
         this.logger.error(`nao foi possivel cancelar cobranca após ${i} tentativas em ${(startTime - new Date().getTime()) / 1000}s.`);
       }
@@ -60,6 +61,8 @@ class PaymentsWorker {
       this.logger.error(`nao foi possivel cancelar cobranca, erro inesperado:`);
       this.logger.error(error);
     }
+    channel.nack(message)
+    return false
   }
 
   async getModel(id: string) {
