@@ -60,7 +60,7 @@ class PaymentsWorker {
             userPaymentModel?.gatewayPaymentID
           )
           const chargeResult = await paymentGateway?.cancelCharge(cancelChargeObject)
-          if (chargeResult) {
+          if (chargeResult && chargeResult instanceof Types.Classes.Pagseguro.CChargeResponse) {
             userPaymentModel.status = chargeResult?.status
             await userPaymentModel.save()
             this.logger.log('Cobranca foi cancelada com sucesso')
